@@ -4,8 +4,6 @@
       <div class="jumbotron">
         <h1>Alex Birman - Final PNT2</h1>
         <br>
-
-        <Navbar />
         
         <router-view></router-view>
 
@@ -18,12 +16,9 @@
 
 <script>
 
-import Navbar from './components/Navbar.vue'
-
 export default {
   name: "App",
   components: {
-    Navbar
 },
 };
 </script>

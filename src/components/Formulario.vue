@@ -2,92 +2,24 @@
   <section class="src-components-formulario">
     <br>
     <hr>
-    <h2>Ingreso de temperatura</h2>
+    <h2>Convesor de temperatura</h2>
     <br />
 
-    <vue-form :state="formState" @submit.prevent="guardar()">
-
-      <validate tag="div">
-        <label for="temperatura">Temperatura</label>
-        <input type="number" id="temperatura" class="form-control" name="temperatura" autocomplete="off"
-          v-model.number="formData.temperatura" @input="calcular($event)" required :min="tempMin" :max="tempMax" />
-        <field-messages name="temperatura" show="$dirty">
-          <div slot="required" class="alert alert-danger mt-1">
-            Campo requerido
-          </div>
-          <div slot="min" class="alert alert-danger mt-1">
-            La temperatura no puede ser inferior a {{ tempMin }}
-          </div>
-          <div slot="max" class="alert alert-danger mt-1">
-            La temperatura no puede ser superior a {{ tempMax }}
-          </div>
-        </field-messages>
-      </validate>
-
-      <validate tag="div">
-        <label for="temperaturaF">TemperaturaF</label>
-        <input type="number" id="temperaturaF" class="form-control" name="temperaturaF" v-model="temperaturas.fahrenheit" :readonly="true" :style="getEstilo()" />
-        <!-- <field-messages name="temperaturaF" show="$dirty">
-          <div slot="required" class="alert alert-danger mt-1">
-            Campo requerido
-          </div>
-          <div slot="min" class="alert alert-danger mt-1">
-            La temperatura no puede ser inferior a {{ tempMin }}
-          </div>
-          <div slot="max" class="alert alert-danger mt-1">
-            La temperatura no puede ser superior a {{ tempMax }}
-          </div>
-        </field-messages> -->
-      </validate>
-
-      <validate tag="div">
-        <label for="temperaturaK">TemperaturaK</label>
-        <input type="number" id="temperaturaK" class="form-control" name="temperaturaK" v-model="temperaturas.kelvin" :readonly="true" :style="getEstilo()" />
-        <!-- <field-messages name="temperaturaK" show="$dirty">
-          <div slot="required" class="alert alert-danger mt-1">
-            Campo requerido
-          </div>
-          <div slot="min" class="alert alert-danger mt-1">
-            La temperatura no puede ser inferior a {{ tempMin }}
-          </div>
-          <div slot="max" class="alert alert-danger mt-1">
-            La temperatura no puede ser superior a {{ tempMax }}
-          </div>
-        </field-messages> -->
-      </validate>
-
-      <br />
-
-      <button class="btn btn-success my-3" :disabled="formState.$invalid">
-        Guardar
-      </button>
+    <vue-form :state="formState">
+      <label for="temperatura">Ingrese temperatura °C</label>
+      <input type="number" id="temperatura" class="form-control" name="temperatura" autocomplete="off"
+        v-model.number="formData.temperatura" @input="calcular($event)" required />
     </vue-form>
 
+    <p>Conv Temperatura °C:</p>
+    <p :style="getEstilo()">{{ temperaturas.fahrenheit }}</p>
+    <p>Conv Temperatura °K:</p>
+    <p :style="getEstilo()">{{ temperaturas.kelvin }}</p>
+
+    <br />
     <hr />
 
-    <!-- <div class="jumbotron">
-      <div v-if="alumnos.length != 0">
-        <table class="table table-dark">
-          <tr>
-            <th>Nombre y apellido</th>
-            <th>Nota</th>
-          </tr>
-          <tr v-for="(alumno, index) in alumnos" :key="index">
-            <td>{{ alumno.nombre }} {{ alumno.apellido }}</td>
-            <td :style="getEstilo(alumno.nota)">{{ alumno.nota }}</td>
-          </tr>
-          <tr v-if="alumnos.length != 0" :style="getEstilo(notaPromedio)">
-            <td>Promedio general</td>
-            <td>{{ notaPromedio }}</td>
-          </tr>
-        </table>
-      </div>
-      <div v-else class="alert alert-warning">
-        No se encontraron alumnos
-      </div>
-
-
-    </div> -->
+    <p>Respuestas: 1:c, 2:b, 3:c, 4:a, 5,c</p>
 
   </section>
 </template>
@@ -102,8 +34,6 @@ export default {
   },
   data() {
     return {
-      tempMin: -100,
-      tempMax: 1000,
       formState: this.getInicialData(),
       formData: this.getInicialData(),
       temperaturas: {
@@ -111,8 +41,8 @@ export default {
         kelvin: '',
         celsius: ''
       },
-      cong: 0,
-      herv: 100
+      minTemp: 0,
+      maxTemp: 15
     }
   },
   methods: {
@@ -123,30 +53,42 @@ export default {
         nota: null
       };
     },
-    /* guardar() {
-      this.alumnos.push(this.formData)
-      this.notas.push(this.formData.nota)
-      this.calcularPromedio(this.notas)
-      this.formData = this.getInicialData()
-      this.formState._reset()
-    }, */
     calcular(e) {
-      console.log(e.target.value)
-      this.temperaturas = {
-        fahrenheit: parseInt(e.target.value) + 32,
-        kelvin: parseInt(e.target.value) + 273.15,
-        celsius: parseInt(e.target.value)
+      var input = parseInt(e.target.value)
+      if (!isNaN(input)) {
+        this.temperaturas = {
+          fahrenheit: ((input*1.8) + 32).toFixed(2),
+          kelvin: input + 273.15,
+          celsius: input
+        }
+      }
+      else if(input == 0) {
+        this.temperaturas = {
+          fahrenheit: 32,
+          kelvin: 273.15,
+          celsius: input
+        }
+      }
+      else if(isNaN(input)){
+        this.temperaturas = {
+          fahrenheit: '',
+          kelvin: '',
+          celsius: ''
+        }
       }
     },
     getEstilo() {
       var color = 'black'
-      if(this.temperaturas.celsius <= this.cong) {
+      if (this.temperaturas.celsius <= this.minTemp) {
         color = 'blue'
       }
-      else if(this.temperaturas.celsius >= this.herv) {
+      else if (this.temperaturas.celsius <= this.maxTemp) {
+        color = 'magenta'
+      }
+      else {
         color = 'red'
       }
-      return {color: color}
+      return { color: color }
     }
   },
   computed: {
