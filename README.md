@@ -1,4 +1,4 @@
-# ejemplo-parcial
+# Conversor de temperaturas
 
 ## Project setup
 ```
